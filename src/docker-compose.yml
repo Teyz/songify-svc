@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  songify-svc-app:
+      command: reflex -sr '\.go$|\.mod$' -- sh -c "go run cmd/main.go"
+      build:
+        dockerfile: Dockerfile.local
+        context: .
+      depends_on:
+        - songify-svc-db
+      environment:
+        - DB_USER=root
+        - DB_PASSWORD=root
+        - DB_NAME=songify-db
+        - DB_HOST=songify-svc-db
+        - DB_PORT=5432
+        - HTTP_SERVER_PORT=3003
+        - SERVICE_NAME=songify-svc
+        - ENVRIONMENT=local
+      volumes:
+        - .:/go/src/app
+      working_dir: /go/src/app
+      ports:
+        - "3003:3003"
+  songify-svc-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: 'root'
+      POSTGRES_PASSWORD: 'root'
+      POSTGRES_DB: 'songify-db'
+    ports:
+      - "5432:5432"
