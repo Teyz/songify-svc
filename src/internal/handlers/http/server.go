@@ -46,6 +46,7 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	// songs endpoints
 	songsV1 := privateV1.Group("/songs")
 	songsV1.GET("/:id", privateSongsV1Handlers.GetSongByID)
+	songsV1.GET("/", privateSongsV1Handlers.GetRandomSong)
 
 	return nil
 }
