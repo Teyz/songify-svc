@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/teyz/songify-svc/internal/config"
+	"github.com/teyz/songify-svc/internal/cron"
 	database_postgres "github.com/teyz/songify-svc/internal/database/postgres"
 	handlers_http "github.com/teyz/songify-svc/internal/handlers/http"
 	pkg_config "github.com/teyz/songify-svc/internal/pkg/config"
@@ -43,6 +44,14 @@ func main() {
 		log.Fatal().Err(err).
 			Msg("main: unable to create user store service")
 	}
+
+	newCron, err := cron.NewCron(ctx, service)
+	if err != nil {
+		log.Fatal().Err(err).
+			Msg("main: unable to create cron service")
+	}
+
+	newCron.CreateGameCron(ctx)
 
 	// create http server
 	httpServer, err := handlers_http.NewServer(ctx, cfg.HTTPServerConfig, service)
