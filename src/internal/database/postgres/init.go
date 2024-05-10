@@ -15,6 +15,7 @@ type DataPrefix string
 
 const (
 	Song DataPrefix = "song_"
+	Game DataPrefix = "game_"
 )
 
 func (dp DataPrefix) String() string {

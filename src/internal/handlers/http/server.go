@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog/log"
 
 	"github.com/teyz/songify-svc/internal/handlers"
+	handlers_http_private_game_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/game/v1"
 	handlers_http_private_song_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/song/v1"
 	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 	service_v1 "github.com/teyz/songify-svc/internal/service/v1"
@@ -34,6 +35,7 @@ func (s *httpServer) Setup(ctx context.Context) error {
 
 	// setup handlers
 	privateSongsV1Handlers := handlers_http_private_song_v1.NewHandler(ctx, s.service)
+	privateGamesV1Handlers := handlers_http_private_game_v1.NewHandler(ctx, s.service)
 
 	// setup middlewares
 	s.router.Use(middleware.Logger())
@@ -47,6 +49,11 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	songsV1 := privateV1.Group("/songs")
 	songsV1.GET("/:id", privateSongsV1Handlers.GetSongByID)
 	songsV1.GET("/", privateSongsV1Handlers.GetRandomSong)
+
+	// games endpoints
+	gamesV1 := privateV1.Group("/games")
+	gamesV1.POST("/", privateGamesV1Handlers.CreateGame)
+	gamesV1.GET("/", privateGamesV1Handlers.GetCurrentGame)
 
 	return nil
 }
