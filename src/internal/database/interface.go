@@ -13,4 +13,6 @@ type Database interface {
 
 	CreateGame(ctx context.Context, songID string) (*entities_game_v1.Game, error)
 	GetCurrentGame(ctx context.Context) (*entities_game_v1.Game, error)
+
+	CheckGuess(ctx context.Context, songID string) (*entities_song_v1.Song_Guess, error)
 }

@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/rainycape/unidecode"
 	"github.com/rs/zerolog/log"
 	database_postgres "github.com/teyz/songify-svc/internal/database/postgres"
 	entities_song_v1 "github.com/teyz/songify-svc/internal/entities/song/v1"
@@ -50,9 +52,11 @@ func main() {
 
 	for _, song := range songs.Songs {
 		id := database_postgres.GenerateDataPrefixWithULID(database_postgres.Song)
+		title := strings.ReplaceAll(unidecode.Unidecode(strings.ToLower(song.Title)), " ", "")
+		artist := strings.ReplaceAll(unidecode.Unidecode(strings.ToLower(song.Artist)), " ", "")
 		db.ExecContext(context.Background(), `
 			INSERT INTO songs (id, title, artist, artist_image_url, lyrics, image_url, released_year, musical_style)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-		`, id, song.Title, song.Artist, song.ArtistImageURL, song.Lyrics, song.ImageURL, song.ReleasedYear, song.MusicalStyle)
+		`, id, title, artist, song.ArtistImageURL, song.Lyrics, song.ImageURL, song.ReleasedYear, song.MusicalStyle)
 	}
 }

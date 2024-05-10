@@ -37,3 +37,9 @@ type Song_Create struct {
 	ReleasedYear   int    `json:"released_year"`
 	MusicalStyle   string `json:"musical_style"`
 }
+
+type Song_Guess struct {
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Artist string `json:"artist"`
+}
