@@ -23,7 +23,6 @@ func (d *dbClient) CreateGame(ctx context.Context, songID string) (*entities_gam
 		id, songID).Scan(
 		&game.ID,
 		&game.SongID,
-		&game.IsActive,
 		&game.CreatedAt,
 	)
 	if err != nil {
@@ -43,12 +42,10 @@ func (d *dbClient) GetCurrentGame(ctx context.Context) (*entities_game_v1.Game, 
 		`
 			SELECT id, song_id, is_active, created_at
 			FROM games
-			WHERE is_active = true
 			ORDER BY created_at DESC
 		`).Scan(
 		&game.ID,
 		&game.SongID,
-		&game.IsActive,
 		&game.CreatedAt,
 	)
 	if err != nil {

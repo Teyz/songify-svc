@@ -24,7 +24,6 @@ func (h *Handler) GetCurrentGame(c echo.Context) error {
 		Game: &entities_game_v1.Game{
 			ID:        currentGame.ID,
 			SongID:    currentGame.SongID,
-			IsActive:  currentGame.IsActive,
 			CreatedAt: currentGame.CreatedAt,
 		},
 	}))

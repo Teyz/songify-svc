@@ -28,6 +28,8 @@ CREATE TABLE songs (
 );
 
 CREATE UNIQUE INDEX songs_title_artist_idx ON songs (title, artist);
+
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON songs FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
 -- +goose StatementEnd
 
 -- +goose Down
