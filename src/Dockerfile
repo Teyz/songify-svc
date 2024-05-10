@@ -1,24 +1,19 @@
-ARG BUILDPLATFORM=linux/amd64
-ARG TARGETPLATFORM=linux/arm64
+FROM golang:1-alpine
 
-FROM --platform=${BUILDPLATFORM} golang:1 AS build
+WORKDIR /src/app
 
-ARG GO_BUILDER_GITHUB_TOKEN=missing_token
-RUN git config --global "url.https://$GO_BUILDER_GITHUB_TOKEN@github.com/".insteadOf https://github.com/
-ENV GOPRIVATE=github.com/teyz
+# Copiez le fichier go.mod et go.sum pour télécharger les dépendances
+COPY go.mod .
+COPY go.sum .
 
-WORKDIR /app
+# Téléchargez les dépendances du module Go
+RUN go mod download
 
+# Copiez le code source dans le conteneur
 COPY . .
 
-RUN go mod download \
-    && GOARCH="arm64" go build cmd/main.go
+# Compilez le code source
+RUN go build -o main ./cmd
 
-FROM --platform=${TARGETPLATFORM} golang:1-alpine
-
-USER nobody:nobody
-WORKDIR /app
-COPY --from=build /app/main ./main
-
-EXPOSE 3003
-ENTRYPOINT ["./main"]
+# Commande par défaut pour exécuter l'application
+CMD ["./main"]

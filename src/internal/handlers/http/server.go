@@ -11,6 +11,7 @@ import (
 	"github.com/teyz/songify-svc/internal/handlers"
 	handlers_http_private_game_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/game/v1"
 	handlers_http_private_guess_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/guess/v1"
+	handlers_http_private_health_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/health/v1"
 	handlers_http_private_song_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/song/v1"
 	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 	service_v1 "github.com/teyz/songify-svc/internal/service/v1"
@@ -38,11 +39,15 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	privateSongsV1Handlers := handlers_http_private_song_v1.NewHandler(ctx, s.service)
 	privateGamesV1Handlers := handlers_http_private_game_v1.NewHandler(ctx, s.service)
 	privateGuessV1Handlers := handlers_http_private_guess_v1.NewHandler(ctx, s.service)
+	privateHealhV1Handlers := handlers_http_private_health_v1.NewHandler(ctx, s.service)
 
 	// setup middlewares
 	s.router.Use(middleware.Logger())
 	s.router.Use(middleware.Recover())
 	s.router.Use(middleware.CORS())
+
+	// health endpoints
+	s.router.GET("/health", privateHealhV1Handlers.HealthCheck)
 
 	// private endpoints
 	privateV1 := s.router.Group("/private/v1")
