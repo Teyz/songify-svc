@@ -18,17 +18,20 @@ CREATE TABLE songs (
     id                      VARCHAR(32)     PRIMARY KEY NOT NULL,
     title                   VARCHAR(255)    NOT NULL,
     artist                  VARCHAR(255)    NOT NULL,
-    artist_image_url        VARCHAR(255)    NOT NULL,
+    artist_image_url        TEXT            NOT NULL,
     lyrics                  TEXT            NOT NULL,
-    image_url               VARCHAR(255)    NOT NULL,
+    image_url               TEXT            NOT NULL,
     released_year           INTEGER         NOT NULL,
     musical_style           VARCHAR(255)    NOT NULL,
     created_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW(),
     updated_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX songs_title_artist_idx ON songs (title, artist);
 -- +goose StatementEnd
 
 -- +goose Down
 -- +goose StatementBegin
+DROP INDEX songs_title_artist_idx;
 DROP TABLE songs;
 -- +goose StatementEnd
