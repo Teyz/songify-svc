@@ -18,7 +18,7 @@ func (d *dbClient) CreateGame(ctx context.Context, songID string) (*entities_gam
 		`
 			INSERT INTO games (id, song_id)
 			VALUES ($1, $2)
-			RETURNING id, song_id, is_active, created_at
+			RETURNING id, song_id, created_at
 		`,
 		id, songID).Scan(
 		&game.ID,
@@ -40,7 +40,7 @@ func (d *dbClient) GetCurrentGame(ctx context.Context) (*entities_game_v1.Game, 
 
 	err := d.connection.DB.QueryRowContext(ctx,
 		`
-			SELECT id, song_id, is_active, created_at
+			SELECT id, song_id, created_at
 			FROM games
 			ORDER BY created_at DESC
 		`).Scan(
