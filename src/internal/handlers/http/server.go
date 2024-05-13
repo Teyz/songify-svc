@@ -42,7 +42,19 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	privateHealhV1Handlers := handlers_http_private_health_v1.NewHandler(ctx, s.service)
 
 	// setup middlewares
-	s.router.Use(middleware.Logger())
+	//s.router.Use(middleware.Logger())
+	s.router.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			log.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Msg("request")
+
+			return nil
+		},
+	}))
 	s.router.Use(middleware.Recover())
 	s.router.Use(middleware.CORS())
 
