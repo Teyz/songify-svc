@@ -7,3 +7,10 @@ type Game struct {
 	SongID    string    `json:"song_id"`
 	CreatedAt time.Time `json:"created_at"`
 }
+
+type CurrentGame struct {
+	ID        string    `json:"id"`
+	SongID    string    `json:"song_id"`
+	Lyric     string    `json:"lyric"`
+	CreatedAt time.Time `json:"created_at"`
+}

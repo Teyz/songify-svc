@@ -32,7 +32,7 @@ func (d *dbClient) CheckGuess(ctx context.Context, songID string) (*entities_son
 			log.Error().Err(err).
 				Str("song_id", songID).
 				Msgf("database.postgres.dbClient.CheckGuess: song not found")
-			return nil, errors.NewNotFoundError(fmt.Sprintf("database.postgres.dbClient.CheckGuess: song not found"))
+			return nil, errors.NewNotFoundError("database.postgres.dbClient.CheckGuess: song not found")
 		}
 
 		log.Error().Err(err).
