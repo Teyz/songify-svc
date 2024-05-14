@@ -17,12 +17,15 @@ $$ language 'plpgsql';
 CREATE TABLE guesses (
     id                      VARCHAR(32)     PRIMARY KEY NOT NULL,
     user_id                 VARCHAR(32)     NOT NULL,
+    game_id                 VARCHAR(32)     NOT NULL,
     artist                  VARCHAR(255)    NOT NULL,
+    is_artist_correct       BOOLEAN         NOT NULL,
     title                   VARCHAR(255)    NOT NULL,
+    is_title_correct        BOOLEAN         NOT NULL,
     created_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW()
 );
 
-CREATE TRIGGER set_updated_at BEFORE UPDATE ON songs FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
+CREATE TRIGGER set_updated_at BEFORE UPDATE ON guesses FOR EACH ROW EXECUTE FUNCTION set_updated_at_column();
 -- +goose StatementEnd
 
 -- +goose Down

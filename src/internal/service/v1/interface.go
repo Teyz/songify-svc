@@ -16,7 +16,10 @@ type UserStoreService interface {
 	CreateGame(ctx context.Context) (*entities_game_v1.Game, error)
 	GetCurrentGame(ctx context.Context) (*entities_game_v1.Game, error)
 
+	CheckIfUserCanGuess(ctx context.Context, userID string, gameID string) (bool, error)
 	CheckGuess(ctx context.Context, guess *entities_guess_v1.Guess) (bool, error)
+	AddGuess(ctx context.Context, guess *entities_guess_v1.Guess) error
+	GetGuessesByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_guess_v1.Guesses, error)
 
 	CreateUser(ctx context.Context) (*entities_user_v1.User, error)
 	GetUserByID(ctx context.Context, id string) (*entities_user_v1.User, error)

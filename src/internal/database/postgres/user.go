@@ -19,7 +19,7 @@ func (d *dbClient) CreateUser(ctx context.Context) (*entities_user_v1.User, erro
 		`
 			INSERT INTO users (id)
 			VALUES ($1)
-			RETURNING id, song_id, created_at
+			RETURNING id, created_at
 		`,
 		id).Scan(
 		&user.ID,

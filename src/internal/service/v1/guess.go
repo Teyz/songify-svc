@@ -7,12 +7,27 @@ import (
 	"github.com/agnivade/levenshtein"
 	"github.com/rainycape/unidecode"
 	entities_guess_v1 "github.com/teyz/songify-svc/internal/entities/guess/v1"
+	"github.com/teyz/songify-svc/internal/pkg/errors"
 )
 
-func (s *Service) CheckGuess(ctx context.Context, guess *entities_guess_v1.Guess) (bool, error) {
-	song, err := s.store.CheckGuess(ctx, guess.SongID)
+func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities_guess_v1.Guess) (*entities_guess_v1.Guesses, error) {
+	doesUserCanGuess, err := s.store.CheckIfUserCanGuess(ctx, userID, guess.GameID)
 	if err != nil {
-		return false, err
+		return nil, err
+	}
+
+	if !doesUserCanGuess {
+		return nil, errors.NewBadRequestError("user can not guess anymore")
+	}
+
+	game, err := s.store.GetCurrentGame(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	song, err := s.store.CheckGuess(ctx, game.SongID)
+	if err != nil {
+		return nil, err
 	}
 
 	guessedTitle := strings.ReplaceAll(unidecode.Unidecode(strings.ToLower(guess.Title)), " ", "")
@@ -21,9 +36,42 @@ func (s *Service) CheckGuess(ctx context.Context, guess *entities_guess_v1.Guess
 	titleDistance := levenshtein.ComputeDistance(song.Title, guessedTitle)
 	artistDistance := levenshtein.ComputeDistance(song.Artist, guessedArtist)
 
-	if titleDistance > 0 && artistDistance > 0 {
-		return false, nil
+	err = s.store.AddGuess(ctx, userID, &entities_guess_v1.Guess{
+		GameID:          guess.GameID,
+		Artist:          guess.Artist,
+		Title:           guess.Title,
+		IsTitleCorrect:  titleDistance == 0,
+		IsArtistCorrect: artistDistance == 0,
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	return true, nil
+	guesses, err := s.store.GetGuessesByUserIDForGame(ctx, userID, guess.GameID)
+	if err != nil {
+		return nil, err
+	}
+
+	if titleDistance > 0 && artistDistance > 0 {
+		return &entities_guess_v1.Guesses{
+			IsTitleCorrect:  false,
+			IsArtistCorrect: false,
+			Guesses:         guesses.Guesses,
+		}, nil
+	}
+
+	return &entities_guess_v1.Guesses{
+		IsTitleCorrect:  titleDistance == 0,
+		IsArtistCorrect: artistDistance == 0,
+		Guesses:         guesses.Guesses,
+	}, nil
+}
+
+func (s *Service) GetGuessesByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_guess_v1.Guesses, error) {
+	guesses, err := s.store.GetGuessesByUserIDForGame(ctx, userID, gameID)
+	if err != nil {
+		return nil, err
+	}
+
+	return guesses, nil
 }

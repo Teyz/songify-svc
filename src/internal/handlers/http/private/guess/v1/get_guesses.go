@@ -9,38 +9,33 @@ import (
 	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 )
 
-type CheckGuessRequest struct {
-	UserID string `json:"user_id"`
-	GameID string `json:"game_id"`
-	Artist string `json:"artist"`
-	Title  string `json:"title"`
-}
-
-type CheckGuessResponse struct {
+type GetGuessesByUserIDForGameResponse struct {
 	IsTitleCorrect  bool                       `json:"is_title_correct"`
 	IsArtistCorrect bool                       `json:"is_artist_correct"`
 	Guesses         []*entities_guess_v1.Guess `json:"guesses"`
 }
 
-func (h *Handler) CheckGuess(c echo.Context) error {
+func (h *Handler) GetGuessesByUserIDForGame(c echo.Context) error {
 	ctx := c.Request().Context()
 
-	var req CheckGuessRequest
-	if err := c.Bind(&req); err != nil {
-		log.Error().Err(err).Msg("handlers.http.private.guess.v1.check_guess.CheckGuess: can not bind request")
+	userID := c.Param("user_id")
+	if userID == "" {
+		log.Error().Msg("handlers.http.private.guess.v1.get_guesses.Handler.GetGuessesByUserIDForGame: can not get user_id from context")
 		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
 	}
 
-	guesses, err := h.service.CheckGuess(ctx, req.UserID, &entities_guess_v1.Guess{
-		GameID: req.GameID,
-		Artist: req.Artist,
-		Title:  req.Title,
-	})
+	gameID := c.Param("game_id")
+	if gameID == "" {
+		log.Error().Msg("handlers.http.private.guess.v1.get_guesses.Handler.GetGuessesByUserIDForGame: can not get game_id from context")
+		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
+	}
+
+	guesses, err := h.service.GetGuessesByUserIDForGame(ctx, userID, gameID)
 	if err != nil {
 		return c.JSON(pkg_http.TranslateError(ctx, err))
 	}
 
-	return c.JSON(http.StatusOK, pkg_http.NewHTTPResponse(http.StatusOK, pkg_http.MessageSuccess, CheckGuessResponse{
+	return c.JSON(http.StatusOK, pkg_http.NewHTTPResponse(http.StatusOK, pkg_http.MessageSuccess, GetGuessesByUserIDForGameResponse{
 		IsTitleCorrect:  guesses.IsTitleCorrect,
 		IsArtistCorrect: guesses.IsArtistCorrect,
 		Guesses:         guesses.Guesses,

@@ -78,7 +78,8 @@ func (s *httpServer) Setup(ctx context.Context) error {
 
 	// guess endpoints
 	guessV1 := privateV1.Group("/guess")
-	guessV1.GET("/:song_id", privateGuessV1Handlers.CheckGuess)
+	guessV1.POST("/", privateGuessV1Handlers.CheckGuess)
+	guessV1.GET("/:user_id/:game_id", privateGuessV1Handlers.GetGuessesByUserIDForGame)
 
 	// user endpoints
 	userV1 := privateV1.Group("/users")

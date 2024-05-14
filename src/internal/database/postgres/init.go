@@ -14,9 +14,10 @@ import (
 type DataPrefix string
 
 const (
-	Song DataPrefix = "song_"
-	Game DataPrefix = "game_"
-	User DataPrefix = "user_"
+	Song  DataPrefix = "song_"
+	Game  DataPrefix = "game_"
+	User  DataPrefix = "user_"
+	Guess DataPrefix = "guess_"
 )
 
 func (dp DataPrefix) String() string {
