@@ -6,10 +6,12 @@ type Guess struct {
 	IsArtistCorrect bool   `json:"is_artist_correct"`
 	Title           string `json:"title"`
 	IsTitleCorrect  bool   `json:"is_title_correct"`
+	Hint            uint32 `json:"hint"`
 }
 
 type Guesses struct {
 	IsArtistCorrect bool     `json:"is_artist_correct"`
 	IsTitleCorrect  bool     `json:"is_title_correct"`
 	Guesses         []*Guess `json:"guesses"`
+	Hint            string   `json:"hint"`
 }

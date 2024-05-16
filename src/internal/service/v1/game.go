@@ -32,12 +32,12 @@ func (s *Service) GetCurrentGame(ctx context.Context) (*entities_game_v1.Current
 		return nil, err
 	}
 
-	lyric := strings.Split(song.Lyrics, "\n")[0]
+	lyrics := strings.Split(song.Lyrics, "\n")
 
 	return &entities_game_v1.CurrentGame{
 		ID:        game.ID,
 		SongID:    game.SongID,
-		Lyric:     lyric,
+		Lyrics:    lyrics,
 		CreatedAt: game.CreatedAt,
 	}, nil
 }

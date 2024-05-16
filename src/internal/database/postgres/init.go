@@ -18,6 +18,7 @@ const (
 	Game  DataPrefix = "game_"
 	User  DataPrefix = "user_"
 	Guess DataPrefix = "guess_"
+	Round DataPrefix = "round_"
 )
 
 func (dp DataPrefix) String() string {

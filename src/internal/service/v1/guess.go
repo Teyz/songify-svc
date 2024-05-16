@@ -60,6 +60,13 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 		}, nil
 	}
 
+	if titleDistance == 0 && artistDistance == 0 {
+		err := s.store.FinishRound(ctx, userID, guess.GameID)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return &entities_guess_v1.Guesses{
 		IsTitleCorrect:  titleDistance == 0,
 		IsArtistCorrect: artistDistance == 0,
@@ -71,6 +78,13 @@ func (s *Service) GetGuessesByUserIDForGame(ctx context.Context, userID string, 
 	guesses, err := s.store.GetGuessesByUserIDForGame(ctx, userID, gameID)
 	if err != nil {
 		return nil, err
+	}
+
+	if len(guesses.Guesses) == 0 {
+		_, err := s.store.CreateRound(ctx, userID, gameID)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return guesses, nil

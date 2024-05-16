@@ -5,6 +5,8 @@ import (
 
 	entities_game_v1 "github.com/teyz/songify-svc/internal/entities/game/v1"
 	entities_guess_v1 "github.com/teyz/songify-svc/internal/entities/guess/v1"
+	entities_hint_v1 "github.com/teyz/songify-svc/internal/entities/hint/v1"
+	entities_round_v1 "github.com/teyz/songify-svc/internal/entities/round/v1"
 	entities_song_v1 "github.com/teyz/songify-svc/internal/entities/song/v1"
 	entities_user_v1 "github.com/teyz/songify-svc/internal/entities/user/v1"
 )
@@ -23,4 +25,12 @@ type UserStoreService interface {
 
 	CreateUser(ctx context.Context) (*entities_user_v1.User, error)
 	GetUserByID(ctx context.Context, id string) (*entities_user_v1.User, error)
+
+	CreateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
+	GetRoundByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
+	GetRoundsByUserID(ctx context.Context, userID string) ([]*entities_round_v1.Round, error)
+	FinishRound(ctx context.Context, userID string, gameID string) error
+
+	GetCurrentHint(ctx context.Context, userID string, gameID string) (*entities_hint_v1.Hint, error)
+	GetNewHintByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_hint_v1.Hint, error)
 }

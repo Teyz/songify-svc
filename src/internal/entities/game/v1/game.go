@@ -11,6 +11,6 @@ type Game struct {
 type CurrentGame struct {
 	ID        string    `json:"id"`
 	SongID    string    `json:"song_id"`
-	Lyric     string    `json:"lyric"`
+	Lyrics    []string  `json:"lyrics"`
 	CreatedAt time.Time `json:"created_at"`
 }

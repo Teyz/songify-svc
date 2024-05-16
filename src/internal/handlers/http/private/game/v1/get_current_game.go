@@ -9,8 +9,8 @@ import (
 )
 
 type GetCurrentGameResponse struct {
-	Game  *entities_game_v1.Game `json:"game"`
-	Lyric string                 `json:"lyric"`
+	Game   *entities_game_v1.Game `json:"game"`
+	Lyrics []string               `json:"lyrics"`
 }
 
 func (h *Handler) GetCurrentGame(c echo.Context) error {
@@ -27,6 +27,6 @@ func (h *Handler) GetCurrentGame(c echo.Context) error {
 			SongID:    currentGame.SongID,
 			CreatedAt: currentGame.CreatedAt,
 		},
-		Lyric: currentGame.Lyric,
+		Lyrics: currentGame.Lyrics,
 	}))
 }
