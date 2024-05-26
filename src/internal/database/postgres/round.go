@@ -2,6 +2,7 @@ package database_postgres
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 
 	"github.com/rs/zerolog/log"
@@ -43,7 +44,7 @@ func (d *dbClient) GetRoundByUserIDForGame(ctx context.Context, userID string, g
 	round := &entities_round_v1.Round{}
 
 	err := d.connection.DB.QueryRowContext(ctx, `
-		SELECT id, user_id, game_id, hint, status, updated_at, created_at
+		SELECT id, user_id, game_id, hint, status, has_won, updated_at, created_at
 		FROM rounds
 		WHERE user_id = $1 AND game_id = $2
 	`, userID, gameID).Scan(
@@ -52,10 +53,18 @@ func (d *dbClient) GetRoundByUserIDForGame(ctx context.Context, userID string, g
 		&round.GameID,
 		&round.Hint,
 		&round.Status,
+		&round.HasWon,
 		&round.UpdatedAt,
 		&round.CreatedAt,
 	)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error().Err(err).
+				Str("user_id", userID).
+				Msgf("database.postgres.dbClient.GetRoundByUserIDForGame: round not found")
+			return nil, errors.NewNotFoundError("database.postgres.dbClient.GetRoundByUserIDForGame: round not found")
+		}
+
 		log.Error().Err(err).
 			Str("user_id", userID).
 			Str("game_id", gameID).
@@ -70,11 +79,18 @@ func (d *dbClient) GetRoundsByUserID(ctx context.Context, userID string) ([]*ent
 	rounds := []*entities_round_v1.Round{}
 
 	rows, err := d.connection.DB.QueryContext(ctx, `
-		SELECT id, user_id, game_id, hint, status, updated_at, created_at
+		SELECT id, user_id, game_id, hint, status, has_won, updated_at, created_at
 		FROM rounds
 		WHERE user_id = $1
 	`, userID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Error().Err(err).
+				Str("user_id", userID).
+				Msgf("database.postgres.dbClient.GetRoundsByUserID: rounds not found")
+			return nil, errors.NewNotFoundError("database.postgres.dbClient.GetRoundsByUserID: rounds not found")
+		}
+
 		log.Error().Err(err).
 			Str("user_id", userID).
 			Msgf("database.postgres.dbClient.GetRoundsByUserID: failed to get rounds: %v", err.Error())
@@ -90,6 +106,7 @@ func (d *dbClient) GetRoundsByUserID(ctx context.Context, userID string) ([]*ent
 			&round.GameID,
 			&round.Hint,
 			&round.Status,
+			&round.HasWon,
 			&round.UpdatedAt,
 			&round.CreatedAt,
 		)
@@ -123,12 +140,12 @@ func (d *dbClient) StartRound(ctx context.Context, userID string, gameID string)
 	return nil
 }
 
-func (d *dbClient) FinishRound(ctx context.Context, userID string, gameID string) error {
+func (d *dbClient) FinishRound(ctx context.Context, userID string, gameID string, hasWon bool) error {
 	_, err := d.connection.DB.ExecContext(ctx, `
 		UPDATE rounds
-		SET status = 'finished', updated_at = NOW()
+		SET status = 'finished', has_won = $3, updated_at = NOW()
 		WHERE user_id = $1 AND game_id = $2
-	`, userID, gameID)
+	`, userID, gameID, hasWon)
 	if err != nil {
 		log.Error().Err(err).
 			Str("user_id", userID).

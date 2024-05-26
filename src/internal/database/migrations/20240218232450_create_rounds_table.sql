@@ -20,6 +20,7 @@ CREATE TABLE rounds (
     game_id                 VARCHAR(32)     NOT NULL,
     hint                    INTEGER         NOT NULL DEFAULT 0,
     status                  VARCHAR(32)     NOT NULL DEFAULT 'started',
+    has_won                 BOOLEAN         NOT NULL DEFAULT FALSE,
     updated_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW(),
     created_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW()
 );

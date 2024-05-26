@@ -29,7 +29,7 @@ type UserStoreService interface {
 	CreateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
 	GetRoundByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
 	GetRoundsByUserID(ctx context.Context, userID string) ([]*entities_round_v1.Round, error)
-	FinishRound(ctx context.Context, userID string, gameID string) error
+	FinishRound(ctx context.Context, userID string, gameID string, hasWon bool) error
 
 	GetCurrentHint(ctx context.Context, userID string, gameID string) (*entities_hint_v1.Hint, error)
 	GetNewHintByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_hint_v1.Hint, error)

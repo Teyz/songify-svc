@@ -8,6 +8,13 @@ type Round struct {
 	GameID    string    `json:"game_id"`
 	Hint      uint16    `json:"hint"`
 	Status    string    `json:"status"`
+	HasWon    bool      `json:"has_won"`
 	UpdatedAt time.Time `json:"updated_at"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+type Round_Lite struct {
+	Hint   uint16 `json:"hint"`
+	Status string `json:"status"`
+	HasWon bool   `json:"has_won"`
 }

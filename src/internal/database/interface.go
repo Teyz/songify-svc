@@ -29,6 +29,6 @@ type Database interface {
 	GetRoundByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
 	GetRoundsByUserID(ctx context.Context, userID string) ([]*entities_round_v1.Round, error)
 	StartRound(ctx context.Context, userID string, gameID string) error
-	FinishRound(ctx context.Context, userID string, gameID string) error
+	FinishRound(ctx context.Context, userID string, gameID string, hasWon bool) error
 	UpdateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
 }

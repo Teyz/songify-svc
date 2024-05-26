@@ -17,6 +17,10 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 	}
 
 	if !doesUserCanGuess {
+		err := s.store.FinishRound(ctx, userID, guess.GameID, false)
+		if err != nil {
+			return nil, err
+		}
 		return nil, errors.NewBadRequestError("user can not guess anymore")
 	}
 
@@ -52,6 +56,13 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 		return nil, err
 	}
 
+	if len(guesses.Guesses) == 3 {
+		err := s.store.FinishRound(ctx, userID, guess.GameID, (titleDistance == 0 && artistDistance == 0))
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	if titleDistance > 0 && artistDistance > 0 {
 		return &entities_guess_v1.Guesses{
 			IsTitleCorrect:  false,
@@ -61,7 +72,7 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 	}
 
 	if titleDistance == 0 && artistDistance == 0 {
-		err := s.store.FinishRound(ctx, userID, guess.GameID)
+		err := s.store.FinishRound(ctx, userID, guess.GameID, true)
 		if err != nil {
 			return nil, err
 		}

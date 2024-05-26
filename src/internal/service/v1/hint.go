@@ -14,7 +14,7 @@ func (s *Service) GetNewHintByUserIDForGame(ctx context.Context, userID string, 
 		return nil, err
 	}
 
-	if round.Hint >= 2 {
+	if round.Hint >= 3 {
 		return nil, errors.NewBadRequestError("user can not ask for hint anymore")
 	}
 
@@ -46,6 +46,8 @@ func (s *Service) GetNewHintByUserIDForGame(ctx context.Context, userID string, 
 		hint.Hint = song.MusicalStyle
 	} else if round.Hint == 2 {
 		hint.Hint = fmt.Sprintf("%d", song.ReleasedYear)
+	} else {
+		hint.Hint = song.ArtistImageURL
 	}
 
 	return hint, nil

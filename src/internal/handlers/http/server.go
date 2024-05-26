@@ -13,7 +13,9 @@ import (
 	handlers_http_private_guess_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/guess/v1"
 	handlers_http_private_health_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/health/v1"
 	handlers_http_private_hint_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/hint/v1"
+	handlers_http_private_round_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/round/v1"
 	handlers_http_private_song_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/song/v1"
+	handlers_http_private_summary_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/summary/v1"
 	handlers_http_private_user_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/user/v1"
 	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 	service_v1 "github.com/teyz/songify-svc/internal/service/v1"
@@ -44,6 +46,8 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	privateHealhV1Handlers := handlers_http_private_health_v1.NewHandler(ctx, s.service)
 	privateUserV1Handlers := handlers_http_private_user_v1.NewHandler(ctx, s.service)
 	privateHintV1Handlers := handlers_http_private_hint_v1.NewHandler(ctx, s.service)
+	privateSummaryV1Handlers := handlers_http_private_summary_v1.NewHandler(ctx, s.service)
+	privateRoundV1Handlers := handlers_http_private_round_v1.NewHandler(ctx, s.service)
 
 	// setup middlewares
 	//s.router.Use(middleware.Logger())
@@ -91,6 +95,14 @@ func (s *httpServer) Setup(ctx context.Context) error {
 	// hint endpoints
 	hintV1 := privateV1.Group("/hints")
 	hintV1.GET("/:user_id/:game_id", privateHintV1Handlers.GetNewHintByUserIDForGame)
+
+	// summary endpoints
+	summaryV1 := privateV1.Group("/summary")
+	summaryV1.GET("/:user_id/:game_id", privateSummaryV1Handlers.GetSummary)
+
+	// round endpoints
+	roundV1 := privateV1.Group("/rounds")
+	roundV1.GET("/:user_id/:game_id", privateRoundV1Handlers.GetRoundByUserIDForGame)
 
 	return nil
 }

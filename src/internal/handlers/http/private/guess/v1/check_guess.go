@@ -31,6 +31,10 @@ func (h *Handler) CheckGuess(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
 	}
 
+	if req.UserID == "" {
+		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
+	}
+
 	guesses, err := h.service.CheckGuess(ctx, req.UserID, &entities_guess_v1.Guess{
 		GameID: req.GameID,
 		Artist: req.Artist,
