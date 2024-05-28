@@ -2,10 +2,12 @@ package service_v1
 
 import (
 	"context"
+	"encoding/json"
 	"strings"
 
 	"github.com/agnivade/levenshtein"
 	"github.com/rainycape/unidecode"
+	"github.com/rs/zerolog/log"
 	entities_guess_v1 "github.com/teyz/songify-svc/internal/entities/guess/v1"
 	"github.com/teyz/songify-svc/internal/pkg/errors"
 )
@@ -78,6 +80,8 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 		}
 	}
 
+	s.cache.Del(ctx, generateGuessCacheKeyWithUserIDAndGameID(userID, guess.GameID))
+
 	return &entities_guess_v1.Guesses{
 		IsTitleCorrect:  titleDistance == 0,
 		IsArtistCorrect: artistDistance == 0,
@@ -86,6 +90,20 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 }
 
 func (s *Service) GetGuessesByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_guess_v1.Guesses, error) {
+	key := generateGuessCacheKeyWithUserIDAndGameID(userID, gameID)
+
+	cachedGuesses, err := s.cache.Get(ctx, key)
+	if err == nil {
+		var guesses *entities_guess_v1.Guesses
+		err = json.Unmarshal([]byte(cachedGuesses), &guesses)
+		if err != nil {
+			log.Error().Err(err).
+				Msg("service.v1.service.GetGuessesByUserIDForGame: unable to unmarshal guesses")
+		} else {
+			return guesses, nil
+		}
+	}
+
 	guesses, err := s.store.GetGuessesByUserIDForGame(ctx, userID, gameID)
 	if err != nil {
 		return nil, err
@@ -96,6 +114,14 @@ func (s *Service) GetGuessesByUserIDForGame(ctx context.Context, userID string, 
 		if err != nil {
 			return nil, err
 		}
+	}
+
+	bytes, err := json.Marshal(guesses)
+	if err != nil {
+		log.Error().Err(err).
+			Msg("service.v1.service.GetGuessesByUserIDForGame: unable to marshal guesses")
+	} else {
+		s.cache.SetEx(ctx, key, bytes, gameCacheDuration)
 	}
 
 	return guesses, nil

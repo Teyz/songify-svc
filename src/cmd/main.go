@@ -12,6 +12,7 @@ import (
 	"github.com/teyz/songify-svc/internal/config"
 	database_postgres "github.com/teyz/songify-svc/internal/database/postgres"
 	handlers_http "github.com/teyz/songify-svc/internal/handlers/http"
+	"github.com/teyz/songify-svc/internal/pkg/cache/redis"
 	pkg_config "github.com/teyz/songify-svc/internal/pkg/config"
 	pkg_postgres "github.com/teyz/songify-svc/internal/pkg/database/postgres"
 	service "github.com/teyz/songify-svc/internal/service/v1"
@@ -38,7 +39,10 @@ func main() {
 	}
 	databaseClient := database_postgres.NewClient(ctx, databaseConnection)
 
-	service, err := service.NewService(ctx, databaseClient)
+	cacheConnection := redis.GetConnection(ctx, &cfg.RedisConfig)
+	redisClient := redis.NewRedisCache(ctx, cacheConnection)
+
+	service, err := service.NewService(ctx, databaseClient, redisClient)
 	if err != nil {
 		log.Fatal().Err(err).
 			Msg("main: unable to create user store service")

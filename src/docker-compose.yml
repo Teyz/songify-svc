@@ -8,6 +8,7 @@ services:
         context: .
       depends_on:
         - songify-svc-db
+        - songify-svc-redis
       environment:
         - DB_USER=root
         - DB_PASSWORD=root
@@ -15,6 +16,8 @@ services:
         - DB_HOST=songify-svc-db
         - DB_PORT=5432
         - HTTP_SERVER_PORT=3003
+        - CACHE_HOST=songify-svc-redis
+        - CACHE_PORT=6379
         - SERVICE_NAME=songify-svc
         - ENVRIONMENT=local
       volumes:
@@ -22,6 +25,10 @@ services:
       working_dir: /go/src/app
       ports:
         - "3003:3003"
+  songify-svc-redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
   songify-svc-db:
     image: postgres:latest
     environment:

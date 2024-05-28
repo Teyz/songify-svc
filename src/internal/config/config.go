@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/teyz/songify-svc/internal/pkg/cache/redis"
 	pkg_postgres "github.com/teyz/songify-svc/internal/pkg/database/postgres"
 	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 )
@@ -11,4 +12,5 @@ type Config struct {
 
 	HTTPServerConfig pkg_http.HTTPServerConfig
 	PostgresConfig   pkg_postgres.PostgresConfig
+	RedisConfig      redis.RedisConfig
 }
