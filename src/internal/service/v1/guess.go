@@ -19,7 +19,13 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 	}
 
 	if !doesUserCanGuess {
-		err := s.store.FinishRound(ctx, userID, guess.GameID, false)
+		err := s.cache.Del(ctx, generateRoundCacheKeyWithUserIDAndGameID(userID, guess.GameID))
+		if err != nil {
+			log.Error().Err(err).
+				Msg("service.v1.service.CheckGuess: unable to delete round cache")
+		}
+
+		err = s.store.FinishRound(ctx, userID, guess.GameID, false)
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +82,13 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 	}
 
 	if titleDistance == 0 && artistDistance == 0 {
-		err := s.store.FinishRound(ctx, userID, guess.GameID, true)
+		err := s.cache.Del(ctx, generateRoundCacheKeyWithUserIDAndGameID(userID, game.ID))
+		if err != nil {
+			log.Error().Err(err).
+				Msg("service.v1.service.CheckGuess: unable to delete round cache")
+		}
+
+		err = s.store.FinishRound(ctx, userID, guess.GameID, true)
 		if err != nil {
 			return nil, err
 		}

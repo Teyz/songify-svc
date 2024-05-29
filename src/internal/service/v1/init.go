@@ -10,15 +10,20 @@ import (
 )
 
 const (
-	gameCacheDuration    = time.Hour * 24
-	guessCacheDuration   = time.Hour * 24
+	gameCacheDuration    = time.Hour * 2
+	guessCacheDuration   = time.Hour * 2
 	songCacheDuration    = time.Hour * 24 * 30
-	summaryCacheDuration = time.Hour * 24
-	roundCacheDuration   = time.Hour * 24
+	summaryCacheDuration = time.Hour * 2
+	roundCacheDuration   = time.Hour * 2
+	userCacheDuration    = time.Hour * 24
 )
 
 func generateGameCacheKey() string {
 	return "songify-svc:game"
+}
+
+func generateUserCacheKeyWithID(userID string) string {
+	return fmt.Sprintf("songify-svc:user:user_id:%v", userID)
 }
 
 func generateSongCacheKeyWithID(songID string) string {
