@@ -84,6 +84,8 @@ func (d *dbClient) GetRandomSong(ctx context.Context) (*entities_song_v1.Song, e
 			updated_at
 		FROM
 			songs
+		WHERE
+			has_been_daily_used IS FALSE
 		OFFSET 
 			$1
 		`,
@@ -111,6 +113,11 @@ func (d *dbClient) GetRandomSong(ctx context.Context) (*entities_song_v1.Song, e
 		return nil, errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.GetRandomSong: failed to get random song: %v", err.Error()))
 	}
 
+	err = d.updateSongDailyUsage(ctx, song.ID)
+	if err != nil {
+		return nil, err
+	}
+
 	return song, nil
 }
 
@@ -122,6 +129,8 @@ func (d *dbClient) getSongsLength(ctx context.Context) (int, error) {
 			COUNT(*)
 		FROM
 			songs
+		WHERE
+			has_been_daily_used IS FALSE;
 		`).Scan(
 		&songLenght,
 	)
@@ -138,4 +147,24 @@ func (d *dbClient) getSongsLength(ctx context.Context) (int, error) {
 	}
 
 	return songLenght, nil
+}
+
+func (d *dbClient) updateSongDailyUsage(ctx context.Context, id string) error {
+	_, err := d.connection.DB.ExecContext(ctx,
+		`UPDATE
+			songs
+		SET
+			has_been_daily_used = TRUE
+		WHERE
+			id = $1
+		`,
+		id)
+	if err != nil {
+		log.Error().Err(err).
+			Str("id", id).
+			Msgf("database.postgres.dbClient.UpdateSongDailyUsage: failed to update song daily usage: %v", err.Error())
+		return errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.UpdateSongDailyUsage: failed to update song daily usage: %v", err.Error()))
+	}
+
+	return nil
 }

@@ -23,6 +23,7 @@ CREATE TABLE songs (
     image_url               TEXT            NOT NULL,
     released_year           INTEGER         NOT NULL,
     musical_style           VARCHAR(255)    NOT NULL,
+    has_been_daily_used     BOOLEAN         NOT NULL DEFAULT FALSE,
     created_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW(),
     updated_at              TIMESTAMP(6)    NOT NULL DEFAULT NOW()
 );
