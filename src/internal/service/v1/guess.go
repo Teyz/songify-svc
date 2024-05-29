@@ -26,6 +26,8 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 		return nil, errors.NewBadRequestError("user can not guess anymore")
 	}
 
+	s.cache.Del(ctx, generateGuessCacheKeyWithUserIDAndGameID(userID, guess.GameID))
+
 	game, err := s.store.GetCurrentGame(ctx)
 	if err != nil {
 		return nil, err
@@ -79,8 +81,6 @@ func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities
 			return nil, err
 		}
 	}
-
-	s.cache.Del(ctx, generateGuessCacheKeyWithUserIDAndGameID(userID, guess.GameID))
 
 	return &entities_guess_v1.Guesses{
 		IsTitleCorrect:  titleDistance == 0,
