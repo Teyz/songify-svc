@@ -4,8 +4,9 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+
 	entities_song_v1 "github.com/teyz/songify-svc/internal/entities/song/v1"
-	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
+	pkg_http "github.com/teyz/songify-svc/pkg/http"
 )
 
 type GetRandomSongResponse struct {

@@ -5,8 +5,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
+
 	entities_round_v1 "github.com/teyz/songify-svc/internal/entities/round/v1"
-	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
+	pkg_http "github.com/teyz/songify-svc/pkg/http"
 )
 
 type GetRoundByUserIDForGameResponse struct {
@@ -18,13 +19,13 @@ func (h *Handler) GetRoundByUserIDForGame(c echo.Context) error {
 
 	userID := c.Param("user_id")
 	if userID == "" {
-		log.Error().Msg("handlers.http.private.hint.v1.get_hint_by_user_id_for_game.Handler.GetHintByUserIDForGame: can not get user_id from context")
+		log.Error().Msg("handlers.http.private.hint.v1.get_round_by_user_id_for_game.Handler.GetRoundByUserIDForGame: can not get user_id from context")
 		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
 	}
 
 	gameID := c.Param("game_id")
 	if gameID == "" {
-		log.Error().Msg("handlers.http.private.hint.v1.get_hint_by_user_id_for_game.Handler.GetHintByUserIDForGame: can not get game_id from context")
+		log.Error().Msg("handlers.http.private.hint.v1.get_round_by_user_id_for_game.Handler.GetRoundByUserIDForGame: can not get game_id from context")
 		return c.JSON(http.StatusBadRequest, pkg_http.NewHTTPResponse(http.StatusBadRequest, pkg_http.MessageBadRequestError, nil))
 	}
 

@@ -12,10 +12,10 @@ import (
 	"github.com/teyz/songify-svc/internal/config"
 	database_postgres "github.com/teyz/songify-svc/internal/database/postgres"
 	handlers_http "github.com/teyz/songify-svc/internal/handlers/http"
-	"github.com/teyz/songify-svc/internal/pkg/cache/redis"
-	pkg_config "github.com/teyz/songify-svc/internal/pkg/config"
-	pkg_postgres "github.com/teyz/songify-svc/internal/pkg/database/postgres"
 	service "github.com/teyz/songify-svc/internal/service/v1"
+	pkg_redis "github.com/teyz/songify-svc/pkg/cache/redis"
+	pkg_config "github.com/teyz/songify-svc/pkg/config"
+	pkg_postgres "github.com/teyz/songify-svc/pkg/database/postgres"
 )
 
 func main() {
@@ -39,8 +39,8 @@ func main() {
 	}
 	databaseClient := database_postgres.NewClient(ctx, databaseConnection)
 
-	cacheConnection := redis.GetConnection(ctx, &cfg.RedisConfig)
-	redisClient := redis.NewRedisCache(ctx, cacheConnection)
+	cacheConnection := pkg_redis.GetConnection(ctx, &cfg.RedisConfig)
+	redisClient := pkg_redis.NewRedisCache(ctx, cacheConnection)
 
 	service, err := service.NewService(ctx, databaseClient, redisClient)
 	if err != nil {

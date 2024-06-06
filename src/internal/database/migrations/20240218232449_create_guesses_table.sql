@@ -5,15 +5,6 @@ SELECT 'up SQL query';
 -- +goose StatementEnd
 
 -- +goose StatementBegin
-CREATE OR REPLACE FUNCTION set_updated_at_column() RETURNS TRIGGER AS $$
-  BEGIN
-   NEW.updated_at = NOW();
-   RETURN NEW;
-  END;
-$$ language 'plpgsql';
--- +goose StatementEnd
-
--- +goose StatementBegin
 CREATE TABLE guesses (
     id                      VARCHAR(32)     PRIMARY KEY NOT NULL,
     user_id                 VARCHAR(32)     NOT NULL,

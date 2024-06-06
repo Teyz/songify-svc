@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/teyz/songify-svc/internal/database"
-	pkg_cache "github.com/teyz/songify-svc/internal/pkg/cache"
+	pkg_cache "github.com/teyz/songify-svc/pkg/cache"
 )
 
 const (

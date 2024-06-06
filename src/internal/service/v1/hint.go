@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	entities_hint_v1 "github.com/teyz/songify-svc/internal/entities/hint/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (s *Service) GetNewHintByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_hint_v1.Hint, error) {

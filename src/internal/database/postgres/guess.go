@@ -6,13 +6,14 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+
 	entities_guess_v1 "github.com/teyz/songify-svc/internal/entities/guess/v1"
 	entities_song_v1 "github.com/teyz/songify-svc/internal/entities/song/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
-func (d *dbClient) CheckIfUserCanGuess(ctx context.Context, userID string, gameID string) (bool, error) {
-	var count int
+func (d *dbClient) CheckIfUserCanGuess(ctx context.Context, userID string, gameID string) (int32, error) {
+	var countUserGuesses int32
 
 	err := d.connection.DB.QueryRowContext(ctx, `
 		SELECT
@@ -22,16 +23,16 @@ func (d *dbClient) CheckIfUserCanGuess(ctx context.Context, userID string, gameI
 		WHERE
 			user_id = $1
 			AND game_id = $2
-	`, userID, gameID).Scan(&count)
+	`, userID, gameID).Scan(&countUserGuesses)
 	if err != nil {
 		log.Error().Err(err).
 			Str("user_id", userID).
 			Str("game_id", gameID).
 			Msgf("database.postgres.dbClient.CheckIfUserCanGuess: failed to check if user can guess: %v", err.Error())
-		return false, errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.CheckIfUserCanGuess: failed to check if user can guess: %v", err.Error()))
+		return 0, errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.CheckIfUserCanGuess: failed to check if user can guess: %v", err.Error()))
 	}
 
-	return count <= 4, nil
+	return countUserGuesses, nil
 }
 
 func (d *dbClient) CheckGuess(ctx context.Context, songID string) (*entities_song_v1.Song_Guess, error) {
@@ -89,10 +90,10 @@ func (d *dbClient) AddGuess(ctx context.Context, userID string, guess *entities_
 func (d *dbClient) GetGuessesByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_guess_v1.Guesses, error) {
 	rows, err := d.connection.DB.QueryContext(ctx, `
 		SELECT
-			guesses.title,
-			guesses.is_title_correct,
-			guesses.artist,
-			guesses.is_artist_correct
+			title,
+			is_title_correct,
+			artist,
+			is_artist_correct
 		FROM
 			guesses
 		WHERE

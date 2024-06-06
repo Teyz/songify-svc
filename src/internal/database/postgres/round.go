@@ -6,8 +6,10 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+
 	entities_round_v1 "github.com/teyz/songify-svc/internal/entities/round/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/constants"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (d *dbClient) CreateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error) {
@@ -75,60 +77,12 @@ func (d *dbClient) GetRoundByUserIDForGame(ctx context.Context, userID string, g
 	return round, nil
 }
 
-func (d *dbClient) GetRoundsByUserID(ctx context.Context, userID string) ([]*entities_round_v1.Round, error) {
-	rounds := []*entities_round_v1.Round{}
-
-	rows, err := d.connection.DB.QueryContext(ctx, `
-		SELECT id, user_id, game_id, hint, status, has_won, updated_at, created_at
-		FROM rounds
-		WHERE user_id = $1
-	`, userID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			log.Error().Err(err).
-				Str("user_id", userID).
-				Msgf("database.postgres.dbClient.GetRoundsByUserID: rounds not found")
-			return nil, errors.NewNotFoundError("database.postgres.dbClient.GetRoundsByUserID: rounds not found")
-		}
-
-		log.Error().Err(err).
-			Str("user_id", userID).
-			Msgf("database.postgres.dbClient.GetRoundsByUserID: failed to get rounds: %v", err.Error())
-		return nil, errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.GetRoundsByUserID: failed to get rounds: %v", err.Error()))
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		round := &entities_round_v1.Round{}
-		err := rows.Scan(
-			&round.ID,
-			&round.UserID,
-			&round.GameID,
-			&round.Hint,
-			&round.Status,
-			&round.HasWon,
-			&round.UpdatedAt,
-			&round.CreatedAt,
-		)
-		if err != nil {
-			log.Error().Err(err).
-				Str("user_id", userID).
-				Msgf("database.postgres.dbClient.GetRoundsByUserID: failed to scan round: %v", err.Error())
-			return nil, errors.NewInternalServerError(fmt.Sprintf("database.postgres.dbClient.GetRoundsByUserID: failed to scan round: %v", err.Error()))
-		}
-
-		rounds = append(rounds, round)
-	}
-
-	return rounds, nil
-}
-
 func (d *dbClient) StartRound(ctx context.Context, userID string, gameID string) error {
 	_, err := d.connection.DB.ExecContext(ctx, `
 		UPDATE rounds
-		SET status = 'started', updated_at = NOW()
+		SET status = $3
 		WHERE user_id = $1 AND game_id = $2
-	`, userID, gameID)
+	`, userID, gameID, constants.RoundStatusStarted)
 	if err != nil {
 		log.Error().Err(err).
 			Str("user_id", userID).
@@ -143,9 +97,9 @@ func (d *dbClient) StartRound(ctx context.Context, userID string, gameID string)
 func (d *dbClient) FinishRound(ctx context.Context, userID string, gameID string, hasWon bool) error {
 	_, err := d.connection.DB.ExecContext(ctx, `
 		UPDATE rounds
-		SET status = 'finished', has_won = $3, updated_at = NOW()
+		SET status = $4, has_won = $3
 		WHERE user_id = $1 AND game_id = $2
-	`, userID, gameID, hasWon)
+	`, userID, gameID, hasWon, constants.RoundStatusFinished)
 	if err != nil {
 		log.Error().Err(err).
 			Str("user_id", userID).
@@ -162,7 +116,7 @@ func (d *dbClient) UpdateRound(ctx context.Context, userID string, gameID string
 
 	err := d.connection.DB.QueryRowContext(ctx, `
 		UPDATE rounds
-		SET hint = rounds.hint + 1, updated_at = NOW()
+		SET hint = rounds.hint + 1
 		WHERE user_id = $1 AND game_id = $2
 		RETURNING id, user_id, game_id, hint, status, updated_at, created_at
 	`, userID, gameID).Scan(

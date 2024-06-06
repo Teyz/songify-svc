@@ -8,17 +8,18 @@ import (
 	"github.com/agnivade/levenshtein"
 	"github.com/rainycape/unidecode"
 	"github.com/rs/zerolog/log"
+
 	entities_guess_v1 "github.com/teyz/songify-svc/internal/entities/guess/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (s *Service) CheckGuess(ctx context.Context, userID string, guess *entities_guess_v1.Guess) (*entities_guess_v1.Guesses, error) {
-	doesUserCanGuess, err := s.store.CheckIfUserCanGuess(ctx, userID, guess.GameID)
+	countUserGuesses, err := s.store.CheckIfUserCanGuess(ctx, userID, guess.GameID)
 	if err != nil {
 		return nil, err
 	}
 
-	if !doesUserCanGuess {
+	if countUserGuesses >= 3 {
 		err := s.cache.Del(ctx, generateRoundCacheKeyWithUserIDAndGameID(userID, guess.GameID))
 		if err != nil {
 			log.Error().Err(err).

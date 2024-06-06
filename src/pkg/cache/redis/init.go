@@ -1,10 +1,11 @@
-package redis
+package pkg_redis
 
 import (
 	"context"
 
 	"github.com/redis/go-redis/v9"
-	pkg_cache "github.com/teyz/songify-svc/internal/pkg/cache"
+
+	pkg_cache "github.com/teyz/songify-svc/pkg/cache"
 )
 
 type cacheClient struct {

@@ -1,4 +1,4 @@
-package redis
+package pkg_redis
 
 import (
 	"context"
@@ -6,7 +6,8 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog/log"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (c *cacheClient) Set(ctx context.Context, key string, value interface{}) error {

@@ -17,8 +17,8 @@ import (
 	handlers_http_private_song_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/song/v1"
 	handlers_http_private_summary_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/summary/v1"
 	handlers_http_private_user_v1 "github.com/teyz/songify-svc/internal/handlers/http/private/user/v1"
-	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
 	service_v1 "github.com/teyz/songify-svc/internal/service/v1"
+	pkg_http "github.com/teyz/songify-svc/pkg/http"
 )
 
 type httpServer struct {

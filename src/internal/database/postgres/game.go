@@ -5,8 +5,9 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+
 	entities_game_v1 "github.com/teyz/songify-svc/internal/entities/game/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (d *dbClient) CreateGame(ctx context.Context, songID string) (*entities_game_v1.Game, error) {

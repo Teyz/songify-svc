@@ -1,4 +1,4 @@
-package redis
+package pkg_redis
 
 type RedisConfig struct {
 	CacheHost string `env:"CACHE_HOST"`

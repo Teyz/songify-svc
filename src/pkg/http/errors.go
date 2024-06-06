@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func TranslateError(ctx context.Context, err error) (int, interface{}) {

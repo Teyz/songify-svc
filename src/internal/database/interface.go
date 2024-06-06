@@ -17,7 +17,7 @@ type Database interface {
 	CreateGame(ctx context.Context, songID string) (*entities_game_v1.Game, error)
 	GetCurrentGame(ctx context.Context) (*entities_game_v1.Game, error)
 
-	CheckIfUserCanGuess(ctx context.Context, userID string, gameID string) (bool, error)
+	CheckIfUserCanGuess(ctx context.Context, userID string, gameID string) (int32, error)
 	CheckGuess(ctx context.Context, songID string) (*entities_song_v1.Song_Guess, error)
 	AddGuess(ctx context.Context, userID string, guess *entities_guess_v1.Guess) error
 	GetGuessesByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_guess_v1.Guesses, error)
@@ -27,7 +27,6 @@ type Database interface {
 
 	CreateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
 	GetRoundByUserIDForGame(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)
-	GetRoundsByUserID(ctx context.Context, userID string) ([]*entities_round_v1.Round, error)
 	StartRound(ctx context.Context, userID string, gameID string) error
 	FinishRound(ctx context.Context, userID string, gameID string, hasWon bool) error
 	UpdateRound(ctx context.Context, userID string, gameID string) (*entities_round_v1.Round, error)

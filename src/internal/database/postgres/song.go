@@ -7,8 +7,9 @@ import (
 	"math/rand"
 
 	"github.com/rs/zerolog/log"
+
 	entities_song_v1 "github.com/teyz/songify-svc/internal/entities/song/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (d *dbClient) GetSongByID(ctx context.Context, id string) (*entities_song_v1.Song, error) {

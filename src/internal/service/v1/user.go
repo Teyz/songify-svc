@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 
 	"github.com/rs/zerolog/log"
+
 	entities_user_v1 "github.com/teyz/songify-svc/internal/entities/user/v1"
 )
 

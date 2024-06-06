@@ -4,7 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	pkg_http "github.com/teyz/songify-svc/internal/pkg/http"
+
+	pkg_http "github.com/teyz/songify-svc/pkg/http"
 )
 
 func (h *Handler) HealthCheck(c echo.Context) error {

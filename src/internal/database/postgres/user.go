@@ -6,8 +6,9 @@ import (
 	"fmt"
 
 	"github.com/rs/zerolog/log"
+
 	entities_user_v1 "github.com/teyz/songify-svc/internal/entities/user/v1"
-	"github.com/teyz/songify-svc/internal/pkg/errors"
+	"github.com/teyz/songify-svc/pkg/errors"
 )
 
 func (d *dbClient) CreateUser(ctx context.Context) (*entities_user_v1.User, error) {
